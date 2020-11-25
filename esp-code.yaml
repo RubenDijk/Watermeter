@@ -1,0 +1,42 @@
+globals:
+  - id: totalwater
+    type: float
+    restore_value: no
+    initial_value: '00012.345' # <------------------ Watermeter stand.
+
+binary_sensor:
+ - platform: gpio
+   name: "Watermeter"
+   id: watermetersensor
+   pin: D5
+   on_press:
+     lambda: |-
+       static int num_executions = 0;
+       ESP_LOGD("main", "Liters water %d", num_executions);
+       num_executions += 1;
+       id(vitens).publish_state(num_executions);
+       id(vitensm3).publish_state(num_executions);
+       id(vitenstm3).publish_state(id(totalwater) += 0.001);
+
+sensor:
+  - platform: template
+    name: "Waterverbruik"
+    icon: "mdi:waterpump"
+    unit_of_measurement: L
+    id: vitens
+  
+  - platform: template
+    name: "Waterverbruik in M3"
+    icon: "mdi:water"
+    accuracy_decimals: 3
+    unit_of_measurement: m3
+    id: vitensm3
+    filters:
+      - multiply: 0.001
+
+  - platform: template
+    name: "Meterstand M3"
+    icon: "mdi:counter"
+    unit_of_measurement: 'M3'
+    id: vitenstm3
+    accuracy_decimals: 3
