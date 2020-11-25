@@ -1,3 +1,6 @@
+# Coded by Ruben Dijk
+# Release 1.0.0
+
 globals:
   - id: totalwater
     type: float
